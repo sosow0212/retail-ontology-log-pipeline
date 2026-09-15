@@ -1,0 +1,21 @@
+# Local cluster access and generated credentials (never commit)
+.kube/
+.local/
+
+# Datasets (raw and sample files are regenerated or downloaded)
+data/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+
+# OS and editors
+.DS_Store
+.idea/
+.vscode/
