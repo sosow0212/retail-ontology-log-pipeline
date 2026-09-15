@@ -1,0 +1,5 @@
+apiVersion: v2
+name: pipeline-runtime
+description: Runtime configuration shared by data-pipeline Jobs
+type: application
+version: 0.1.0

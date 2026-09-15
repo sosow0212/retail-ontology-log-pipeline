@@ -1,0 +1,27 @@
+# Single-process SeaweedFS (master, volume, filer, S3 gateway) sized for a laptop.
+master:
+  enabled: false
+volume:
+  enabled: false
+filer:
+  enabled: false
+
+allInOne:
+  enabled: true
+  s3:
+    enabled: true
+    port: 8333
+    enableAuth: true
+    existingConfigSecret: seaweedfs-s3-config
+  data:
+    type: persistentVolumeClaim
+    size: 20Gi
+    storageClass: local-path
+  # A 1Gi limit dropped the S3 connection while landing the 664MB causal_data.csv a second time.
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      cpu: "2"
+      memory: 2Gi

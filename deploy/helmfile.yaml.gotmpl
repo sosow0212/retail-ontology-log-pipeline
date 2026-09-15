@@ -1,0 +1,77 @@
+{{- $kubeContext := env "KUBE_CONTEXT" | default "k3d-retail-ontology" }}
+
+repositories:
+  - name: cnpg
+    url: https://cloudnative-pg.github.io/charts
+  - name: seaweedfs
+    url: https://seaweedfs.github.io/seaweedfs/helm
+  - name: lakekeeper
+    url: https://lakekeeper.github.io/lakekeeper-charts/
+
+helmDefaults:
+  kubeContext: {{ $kubeContext }}
+  wait: true
+  waitForJobs: true
+  timeout: 600
+  createNamespace: true
+
+releases:
+  - name: cloudnative-pg
+    namespace: cnpg-system
+    chart: cnpg/cloudnative-pg
+    version: 0.29.0
+    values:
+      - values/cloudnative-pg.yaml
+
+  - name: platform-postgres
+    namespace: platform
+    chart: ./charts/platform-postgres
+    needs:
+      - cnpg-system/cloudnative-pg
+    hooks:
+      # Helm cannot tell when CloudNativePG finished initializing the database cluster.
+      - events: ["postsync"]
+        showlogs: true
+        command: kubectl
+        args:
+          - --context={{ $kubeContext }}
+          - --namespace=platform
+          - wait
+          - --for=condition=Ready
+          - cluster/platform-pg
+          - --timeout=600s
+
+  - name: seaweedfs
+    namespace: platform
+    chart: seaweedfs/seaweedfs
+    version: 4.47.0
+    values:
+      - values/seaweedfs.yaml
+
+  - name: lakekeeper
+    namespace: platform
+    chart: lakekeeper/lakekeeper
+    version: 0.12.0
+    needs:
+      - platform/platform-postgres
+    # The catalog Deployment waits for migrations that run in a post-install hook. If Helm
+    # waited for the Deployment first, the hook would never start.
+    wait: false
+    waitForJobs: false
+    hooks:
+      - events: ["postsync"]
+        showlogs: true
+        command: kubectl
+        args:
+          - --context={{ $kubeContext }}
+          - --namespace=platform
+          - rollout
+          - status
+          - deployment/lakekeeper
+          - --timeout=600s
+    values:
+      - values/lakekeeper.yaml
+
+  - name: pipeline-runtime
+    namespace: pipeline
+    chart: ./charts/pipeline-runtime

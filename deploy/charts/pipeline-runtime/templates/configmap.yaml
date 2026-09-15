@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: retail-pipeline-config
+data:
+  RETAIL_PIPELINE_S3_ENDPOINT: {{ .Values.objectStorage.endpoint | quote }}
+  RETAIL_PIPELINE_S3_REGION: {{ .Values.objectStorage.region | quote }}
+  RETAIL_PIPELINE_S3_RAW_BUCKET: {{ .Values.objectStorage.rawBucket | quote }}
+  RETAIL_PIPELINE_S3_WAREHOUSE_BUCKET: {{ .Values.objectStorage.warehouseBucket | quote }}
+  RETAIL_PIPELINE_LAKEHOUSE_LAKEKEEPER_URL: {{ .Values.lakehouse.lakekeeperUrl | quote }}
+  RETAIL_PIPELINE_LAKEHOUSE_WAREHOUSE: {{ .Values.lakehouse.warehouse | quote }}
+  RETAIL_PIPELINE_LAKEHOUSE_WAREHOUSE_KEY_PREFIX: {{ .Values.lakehouse.warehouseKeyPrefix | quote }}
