@@ -1,0 +1,31 @@
+# Lakekeeper Iceberg REST catalog backed by the shared CloudNativePG cluster.
+# Authentication is disabled on purpose: the cluster is local-only and never exposed.
+postgresql:
+  enabled: false
+
+externalDatabase:
+  type: postgres
+  host_read: platform-pg-rw.platform.svc.cluster.local
+  host_write: platform-pg-rw.platform.svc.cluster.local
+  port: 5432
+  database: lakekeeper
+  user: lakekeeper
+  passwordSecret: lakekeeper-db
+  passwordSecretKey: password
+
+secretBackend:
+  type: Postgres
+  postgres:
+    encryptionKeySecret: lakekeeper-encryption
+    encryptionKeySecretKey: encryptionKey
+
+catalog:
+  replicas: 1
+  config:
+    LAKEKEEPER__BASE_URI: http://lakekeeper.platform.svc.cluster.local:8181
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 512Mi

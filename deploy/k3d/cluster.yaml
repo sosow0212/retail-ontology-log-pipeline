@@ -1,0 +1,23 @@
+apiVersion: k3d.io/v1alpha5
+kind: Simple
+metadata:
+  name: retail-ontology
+servers: 1
+agents: 0
+image: rancher/k3s:v1.36.4-k3s1
+kubeAPI:
+  hostIP: "127.0.0.1"
+options:
+  k3d:
+    wait: true
+    timeout: "300s"
+  k3s:
+    extraArgs:
+      # Traffic entry moves to Gateway API (Envoy Gateway) in a later sprint.
+      - arg: --disable=traefik
+        nodeFilters:
+          - server:*
+  kubeconfig:
+    # The host's default kubeconfig belongs to other clusters; scripts write a repo-local one.
+    updateDefaultKubeconfig: false
+    switchCurrentContext: false

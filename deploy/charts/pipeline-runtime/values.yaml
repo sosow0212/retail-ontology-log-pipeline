@@ -1,0 +1,10 @@
+objectStorage:
+  endpoint: http://seaweedfs-all-in-one.platform.svc.cluster.local:8333
+  region: local-01
+  rawBucket: raw
+  warehouseBucket: lakehouse
+
+lakehouse:
+  lakekeeperUrl: http://lakekeeper.platform.svc.cluster.local:8181
+  warehouse: lakehouse
+  warehouseKeyPrefix: warehouse
